@@ -2,21 +2,28 @@ open Base
 open Stdio
 
 let abs_diff a b = abs (a - b)
-let window a = (a - (a % 100)) / 100
+
+let count_clicks a b =
+  (abs_diff a b / 100)
+  +
+  if a < b
+  then if b % 100 < a % 100 then 1 else 0
+  else if a % 100 = 0
+  then 0
+  else if b % 100 = 0
+  then 1
+  else if a % 100 < b % 100
+  then 1
+  else 0
+;;
 
 let parse_input input =
   input
   |> List.map ~f:(fun line ->
-    let len = String.length line in
-    let first = String.get line 0 in
-    let n = Int.of_string (String.sub line ~pos:1 ~len:(len - 1)) in
-    let value =
-      match first with
-      | 'L' -> -n
-      | 'R' -> n
-      | _ -> failwith "unexpected input"
-    in
-    value)
+    match String.to_list line with
+    | 'L' :: rest -> -(rest |> String.of_char_list |> Int.of_string)
+    | 'R' :: rest -> rest |> String.of_char_list |> Int.of_string
+    | _ -> failwith "unexpected input")
 ;;
 
 let solve_part1 input =
@@ -36,10 +43,7 @@ let solve_part2 input =
   |> parse_input
   |> List.fold ~init:(50, 0) ~f:(fun (acc, count) x ->
     let new_acc = acc + x in
-    let num_wraparound = abs_diff (window new_acc) (window acc) in
-    let edge_case_1 = if new_acc % 100 = 0 && x < 0 then 1 else 0 in
-    let edge_case_2 = if acc % 100 = 0 && x < 0 then -1 else 0 in
-    let count = count + num_wraparound + edge_case_1 + edge_case_2 in
+    let count = count + count_clicks acc new_acc in
     new_acc, count)
   |> (fun (_, count) -> count)
   |> Int.to_string
