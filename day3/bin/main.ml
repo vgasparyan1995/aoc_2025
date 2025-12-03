@@ -1,15 +1,13 @@
 open Base
 open Stdio
 
-let parse_input (input : string list) : int list list =
+let parse_input input =
   input
   |> List.map ~f:(fun line ->
     line |> String.to_list |> List.map ~f:(fun d -> d |> Char.to_string |> Int.of_string))
 ;;
 
-let extract_max_digit (l : (int * int) list)
-  : (int * int) list * (int * int) * (int * int) list
-  =
+let extract_max_digit l =
   let max_item =
     l
     |> List.fold_left ~init:(-1, 0) ~f:(fun (max_i, max_d) (i, d) ->
@@ -20,7 +18,7 @@ let extract_max_digit (l : (int * int) list)
   left, max_item, right
 ;;
 
-let rec extract_digits (n : int) (lists : (int * int) list list) : (int * int) list =
+let rec extract_digits n lists =
   match n with
   | 0 -> []
   | n ->
@@ -48,7 +46,6 @@ let solve_part1 input =
     |> List.sort ~compare:(fun (ai, _) (bi, _) -> ai - bi)
     |> List.map ~f:(fun (_, d) -> d)
     |> List.fold_left ~init:0 ~f:(fun acc d -> (acc * 10) + d))
-  |> List.map ~f:(fun n -> n)
   |> List.fold_left ~init:0 ~f:( + )
 ;;
 
@@ -62,7 +59,6 @@ let solve_part2 input =
     |> List.sort ~compare:(fun (ai, _) (bi, _) -> ai - bi)
     |> List.map ~f:(fun (_, d) -> d)
     |> List.fold_left ~init:0 ~f:(fun acc d -> (acc * 10) + d))
-  |> List.map ~f:(fun n -> n)
   |> List.fold_left ~init:0 ~f:( + )
 ;;
 
